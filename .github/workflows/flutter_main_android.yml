@@ -1,0 +1,43 @@
+name: Flutter build and deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - uses: actions/upload-artifact@v2
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: app-release.apk
+      - uses: r0adkll/upload-google-play@v1
+        with:
+          packageName: "com.example.app"
+          releaseFile: app-release.apk
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+
+# The first job is the build job. It runs on the latest Ubuntu image and checks out the code. Then it uses the Flutter Action to install Flutter and run flutter pub get . Finally, it builds the app in release mode and uploads the APK as an artifact.
+
+# The second job is the deploy job. It runs on the latest Ubuntu image and downloads the artifact from the build job. Then it uses the upload-google-play action to upload the APK to the Play Store. The action requires a service account JSON file, which is stored as a secret in the repository.
+
+# The service account JSON file can be generated in the Google Play Console. Go to Settings > API access and click on the Create Service Account button. Give the service account a name and click on the Create button. Then click on the Download JSON button to download the service account JSON file.
+
+

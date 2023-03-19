@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+
+import 'package:tetris/maps/map_selector.dart';
+import 'package:tetris/wall/brick.dart';
+
+import 'seeds/seed.dart';
 
 void main() => runApp(const PacmanApp());
 
@@ -27,48 +31,44 @@ class PacmanGame extends StatefulWidget {
 class _PacmanGameState extends State<PacmanGame> {
   static int numberInRow = 11;
   int numberOfSquare = numberInRow * 17;
+  List<int> barriers = getLevelMap(levelNumber: 1);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[800],
+      backgroundColor: Colors.black,
       body: Column(
         children: [
           Expanded(
             flex: 5,
-            child: Container(
-              child: GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: numberOfSquare,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: numberInRow,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(1.0),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.grey,
-                      ),
-                      child: Text('$index'),
-                    ),
-                  );
-                },
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: numberOfSquare,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: numberInRow,
               ),
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                  padding: const EdgeInsets.all(1.0),
+                  child: barriers.contains(index)
+                      ? const BrickWidget()
+                      : const SeedWidget(),
+                );
+              },
             ),
           ),
           Expanded(
               child: Container(
-                color: Colors.white,
+            color: Colors.white,
             child: Row(
               children: [
                 Expanded(
                     child: Container(
-                  child: Text('Score: 0'),
+                  child: const Text('Score: 0'),
                 )),
                 Expanded(
                     child: Container(
-                  child: Text('Level: 1'),
+                  child: const Text('Level: 1'),
                 )),
               ],
             ),
