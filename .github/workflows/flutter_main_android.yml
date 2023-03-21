@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  APP_NAME: packman-battle
+  APP_NAME: my_flutter_app
   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
 jobs:
@@ -17,22 +17,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Install curl and bash
+      run: sudo apt-get update && sudo apt-get install -y curl bash
 
-    - name: Install bash
-      run: sudo apt-get update && sudo apt-get install -y bash
+    - uses: actions/checkout@v2
 
-    - uses: actions/setup-java@v2
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v1
       with:
-        distribution: 'zulu'
-        java-version: '11'
-    - uses: subosito/flutter-action@v2
-      
-    - run: flutter pub get
-#    - run: flutter test
-    - run: flutter build apk
-    - run: flutter build appbundle
-    
+        channel: 'stable'
+        
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Build App Bundle
+      run: flutter build appbundle
 
     - name: Install Firebase CLI
       run: curl -sL firebase.tools | bash
