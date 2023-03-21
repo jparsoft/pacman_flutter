@@ -35,7 +35,7 @@ jobs:
 
       - name: Distribute APK via Firebase App Distribution
 
-        uses: wzieba/Firebase-Distribution-Github-Action@v1.5
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ env.APP_ID }}
           token: ${{ env.FIREBASE_TOKEN }}
