@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tetris/maps/level_entity.dart';
 
 import 'package:tetris/maps/map_selector.dart';
 import 'package:tetris/wall/brick.dart';
@@ -31,7 +32,7 @@ class PacmanGame extends StatefulWidget {
 class _PacmanGameState extends State<PacmanGame> {
   static int numberInRow = 11;
   int numberOfSquare = numberInRow * 17;
-  List<int> barriers = getLevelMap(levelNumber: 1);
+  LevelEntity level = getLevelMap(levelNumber: 2);
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +51,9 @@ class _PacmanGameState extends State<PacmanGame> {
               itemBuilder: (BuildContext context, int index) {
                 return Padding(
                   padding: const EdgeInsets.all(1.0),
-                  child: barriers.contains(index)
-                      ? const BrickWidget()
-                      : const SeedWidget(),
+                  child: level.barriers.contains(index)
+                      ?  BrickWidget(color: level.brickColor)
+                      :  SeedWidget(color: level.seedColor),
                 );
               },
             ),
@@ -68,7 +69,7 @@ class _PacmanGameState extends State<PacmanGame> {
                 )),
                 Expanded(
                     child: Container(
-                  child: const Text('Level: 1'),
+                  child:  Text('Level: ${level.level}'),
                 )),
               ],
             ),

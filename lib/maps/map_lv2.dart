@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:tetris/maps/level_entity.dart';
 
-LevelEntity level1 = LevelEntity(
-    level: '1',
-    brickColor: Colors.blue,
-    seedColor: Colors.yellow,
+LevelEntity level2 = LevelEntity(
+    level: '2',
+    brickColor: Colors.green,
+    seedColor: Colors.red,
     barriers: [
       0,
       1,
       2,
       3,
       4,
-      5,
       6,
       7,
       8,
