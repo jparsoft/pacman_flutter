@@ -1,46 +1,33 @@
-name: Build and Distribute Flutter App
+name: CI
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
-
-env:
-  APP_NAME: my_flutter_app
-  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
 jobs:
-  build:
+  build-and-deploy-android:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install curl and bash
-      run: sudo apt-get update && sudo apt-get install -y curl bash
-
-    - uses: actions/checkout@v2
-
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v1
-      with:
-        channel: 'stable'
-        
-
-    - name: Install dependencies
-      run: flutter pub get
-
-    - name: Build App Bundle
-      run: flutter build appbundle
-
-    - name: Install Firebase CLI
-      run: curl -sL firebase.tools | bash
-      env:
-        PATH: $PATH:/root/.npm-global/bin
-
-    - name: Authenticate with Firebase
-      run: firebase login:ci --token "${{ secrets.FIREBASE_TOKEN }}"
-
-    - name: Distribute App Bundle via Firebase App Distribution
-      run: firebase appdistribution:distribute "build/app/outputs/bundle/release/app-release.aab" --app ${{ env.APP_NAME }} --groups "internal" --release-notes-file "release_notes.txt"
+      - uses: actions/checkout@v2
+      
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v2
+        with:
+          java-version: 1.8
+      
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle-
+          
+      - name: Build and deploy Android app
+        run: |
+          cd my-app/
+          flutter build apk
+          firebase appdistribution:distribute my-app/build/app/outputs/flutter-apk/app-release.apk --token ${{ secrets.FIREBASE_TOKEN }}
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64/
