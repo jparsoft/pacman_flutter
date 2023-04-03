@@ -6,23 +6,44 @@ on:
     tags: [ v* ]
 
 jobs:
-  build:
-    name: Build and deploy apk and ipa release
-    runs-on: macos-latest
 
-    steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-java@v2
-      with:
-        distribution: 'zulu'
-        java-version: '12.x'
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: "stable"
 
-    - run: flutter pub get
+  build_ios:
+    name: Build Flutter (iOS)
   
-    - run: flutter build apk
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
+      - run: flutter pub get
+      - run: flutter clean
+      - run: flutter build ios --release --no-codesign    
+
+  build_appbundle:
+    name: Build Flutter (Android)
+    
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
+      - run: flutter pub get
+      - run: flutter clean
+      - run: flutter build apk
+      - name: Upload apk
+        uses: actions/upload-artifact@v2.1.4
+        with:
+          name: appbundle
+          path: build/app/outputs/bundle/release/app-release.apk
   
 
 
