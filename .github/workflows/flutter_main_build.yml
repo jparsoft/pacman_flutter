@@ -2,7 +2,7 @@ name: Flutter android and iOS deploy
 
 on:
   push:
-    branches: [ main_ios ]
+    branches: [ main ]
     tags: [ v* ]
 
 jobs:
