@@ -1,0 +1,37 @@
+name: Flutter android and iOS deploy
+
+on:
+  push:
+    branches: [ main_ios ]
+    tags: [ v* ]
+
+jobs:
+  build:
+    name: Build and deploy apk and ipa release
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build apk
+        run: flutter build apk --release
+      - name: Build ipa
+        run: flutter build ios --release --no-codesign
+      - name: Upload apk
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Upload ipa
+        uses: actions/upload-artifact@v2
+        with:
+          name: Runner.ipa
+          path: build/ios/iphoneos/Runner.ipa
+
+
+
+      
