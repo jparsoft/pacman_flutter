@@ -40,17 +40,26 @@ jobs:
         with:
           distribution: 'zulu' # See 'Supported distributions' for available options
           java-version: '17'
+
+      - name: Generate key.properties file
+        run: |
+            echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > android/key.properties
+            echo "keyPassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
+            echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
+            echo "storeFile=android/app/androidapp1.keystore" >> android/key.properties
+            
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
       - run: flutter pub get
       - run: flutter clean
-      - run: flutter build apk
-      - name: Upload apk
+      - run: flutter build appbundle --release
+      - name: Upload appbundle to artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ANDROID_APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: ANDROID_APPBUNDLE
+          path: /build/app/outputs/bundle/release/app.aab
+
   
 
 
