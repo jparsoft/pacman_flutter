@@ -2,7 +2,7 @@ name: Flutter android build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main_android ]
     tags: [ v* ]
 
 jobs:
