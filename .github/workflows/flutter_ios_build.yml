@@ -61,10 +61,23 @@ jobs:
       - run: flutter clean
       # build ios and sign with the certificate and provisioning profile
       - run: flutter build ios --release --no-codesign
-      - run: cd ios && xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos -allowProvisioningUpdates -allowProvisioningDeviceRegistration -archivePath build/Runner.xcarchive archive
-      - run: cd ios && xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/Runner.app -exportOptionsPlist exportOptions.plist
-      - run: cd ios && xcrun altool --upload-app -f build/Runner.app -t ios --apiKey ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }} --apiIssuer ${{ secrets.APPLE_ISSUER_ID }}
 
+      - name: Build resolve Swift dependencies
+        run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release
+
+        
+      - name: Build xArchive
+        run: |
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=${{ secrets.APPLE_ISSUER_ID }} clean archive CODE_SIGN_IDENTITY="Apple Distribution: José Acuña"  
+      
+      - name: Export ipa
+        run: xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
+        
+      - name: Publish iOS Artefacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-ios
+          path: build-output/ios
 
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
