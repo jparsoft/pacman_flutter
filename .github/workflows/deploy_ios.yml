@@ -55,8 +55,4 @@ jobs:
                 api-key-id: ${{ secrets.APPLE_KEY_ID }}
                 api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }} 
 
-        - name: Clean up keychain and provisioning profile
-          if: ${{ always() }}
-          run: |
-            security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-            rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision                
+         
