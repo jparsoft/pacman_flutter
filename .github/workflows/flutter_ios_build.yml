@@ -62,7 +62,7 @@ jobs:
 
       # build ios and sign with the certificate and provisioning profile
       - run: flutter build ios --release
-      - run: cd ios && xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos -allowProvisioningUpdates -allowProvisioningDeviceRegistration -archivePath build/Runner.xcarchive archive
+    #  - run: cd ios && xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos -allowProvisioningUpdates -allowProvisioningDeviceRegistration -archivePath build/Runner.xcarchive archive
       - run: cd ios && xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/Runner.app -exportOptionsPlist exportOptions.plist
       - run: cd ios && xcrun altool --upload-app -f build/Runner.app -t ios --apiKey ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }} --apiIssuer ${{ secrets.APPLE_ISSUER_ID }}
 
