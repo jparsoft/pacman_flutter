@@ -2,7 +2,7 @@ name: Flutter iOS build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main_ios ]
     tags: [ v* ]
 
 jobs:
