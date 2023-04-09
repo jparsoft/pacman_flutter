@@ -45,12 +45,12 @@ jobs:
                 channel: "stable"
         - run: flutter clean        
         - run: flutter pub get
-        - run: flutter build ios --release
+        - run: flutter build ipa --release
 
         - name: 'Upload app to TestFlight'
           uses: apple-actions/upload-testflight-build@v1
           with: 
-                app-path: '/Users/runner/work/pacman_flutter/pacman_flutter/build/ios/iphoneos/Runner.app' 
+                app-path: '/Users/runner/work/pacman_flutter/pacman_flutter/build/ios/iphoneos/Runner.ipa' 
                 issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
                 api-key-id: ${{ secrets.APPLE_KEY_ID }}
                 api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }} 
