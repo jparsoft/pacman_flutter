@@ -1,0 +1,62 @@
+name: Flutter iOS build
+
+on:
+  push:
+    branches: [ main_ios ]
+    tags: [ v* ]
+
+jobs:
+
+
+  build_ios:
+    name: Build Flutter (iOS)
+  
+    runs-on: macos-latest
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+
+        - name: 'Download Certificate'
+          uses: apple-actions/import-codesign-certs@v2
+          with: 
+            p12-file-base64: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
+            p12-password: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+        - name: 'Download Provisioning Profiles'
+          id: provisioning
+          uses: apple-actions/download-provisioning-profiles@v1
+          with: 
+              bundle-id: 'com.jparsoft.firstapp'
+              profile-type: 'IOS_APP_STORE'
+              issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
+              api-key-id: ${{ secrets.APPLE_KEY_ID }}
+              api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+        
+        - name: 'Another example step'
+          run: echo ${{ steps.provisioning.outputs.profiles }}
+          
+        - uses: actions/checkout@v3
+        - uses: actions/setup-java@v3
+          with:
+            distribution: 'zulu' # See 'Supported distributions' for available options
+            java-version: '17'
+            
+        - uses: subosito/flutter-action@v2
+          with:
+                channel: "stable"
+        - run: flutter pub get
+        - run: flutter clean        
+        - run: flutter build ios --release
+
+        - name: 'Upload app to TestFlight'
+          uses: apple-actions/upload-testflight-build@v1
+          with: 
+                app-path: '/Users/runner/work/pacman_flutter/pacman_flutter/build/ios/iphoneos/Runner.app' 
+                issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
+                api-key-id: ${{ secrets.APPLE_KEY_ID }}
+                api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }} 
+
+        - name: Clean up keychain and provisioning profile
+          if: ${{ always() }}
+          run: |
+            security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+            rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision                
