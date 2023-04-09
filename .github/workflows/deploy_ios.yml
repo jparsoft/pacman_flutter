@@ -45,7 +45,7 @@ jobs:
                 channel: "stable"
         - run: flutter clean        
         - run: flutter pub get
-        - run: flutter build ipa --release
+        - run: flutter build ios --release
         - run: cd ios && xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/Runner.app -exportOptionsPlist exportOptions.plist
         - name: 'Upload app to TestFlight'
           uses: apple-actions/upload-testflight-build@v1
